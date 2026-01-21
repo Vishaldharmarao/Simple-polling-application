@@ -1,0 +1,125 @@
+/* Polls List Page */
+.polls-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+}
+
+.polls-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.polls-header h1 {
+    color: #333;
+    font-size: 28px;
+}
+
+.polls-header div {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.polls-header span {
+    color: #666;
+    font-weight: 600;
+}
+
+.logout-btn {
+    padding: 10px 20px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.logout-btn:hover {
+    background: #c0392b;
+}
+
+.no-polls {
+    text-align: center;
+    color: white;
+    font-size: 18px;
+    padding: 60px 20px;
+}
+
+.polls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.poll-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.poll-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.poll-card h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.poll-date {
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.vote-btn {
+    width: 100%;
+    padding: 12px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.vote-btn:hover {
+    background: #5568d3;
+}
+
+@media (max-width: 768px) {
+    .polls-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .polls-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .polls-header div {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .logout-btn {
+        width: 100%;
+    }
+}

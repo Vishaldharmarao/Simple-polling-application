@@ -1,0 +1,191 @@
+/* Vote Page */
+.vote-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+}
+
+.vote-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn {
+    padding: 10px 20px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.back-btn:hover {
+    background: #5568d3;
+}
+
+.vote-card {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.vote-card h2 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 24px;
+}
+
+.voting-section h3,
+.results-section h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.option-label {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.option-label:hover {
+    background: #e8e8e8;
+}
+
+.option-label input {
+    margin-right: 12px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.option-label span {
+    color: #333;
+    font-size: 16px;
+}
+
+.submit-vote-btn {
+    width: 100%;
+    padding: 14px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.submit-vote-btn:hover:not(:disabled) {
+    background: #5568d3;
+}
+
+.submit-vote-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.voted-message {
+    background: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 6px;
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+.results-section {
+    background: #f9f9f9;
+    padding: 25px;
+    border-radius: 8px;
+    margin-top: 30px;
+}
+
+.results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.result-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.result-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.result-text {
+    color: #333;
+    font-weight: 600;
+}
+
+.result-count {
+    color: #999;
+    font-size: 14px;
+}
+
+.progress-bar {
+    background: #e0e0e0;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .vote-card {
+        padding: 20px;
+    }
+
+    .vote-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .vote-card h2 {
+        font-size: 18px;
+    }
+
+    .option-label {
+        padding: 12px;
+    }
+
+    .option-label span {
+        font-size: 14px;
+    }
+}
