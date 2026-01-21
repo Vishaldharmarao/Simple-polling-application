@@ -74,7 +74,7 @@ Create `.env` file in backend folder:
 ```
 DB_HOST=localhost
 DB_USER=root
-DB_PASSWORD=
+DB_PASSWORD=vishal
 DB_NAME=polling_app
 PORT=5000
 NODE_ENV=development
@@ -476,7 +476,6 @@ Response 200:
 ```
 Email: admin@polling.com
 Password: admin123
-(After first login, add role='admin' in database manually)
 ```
 
 ### 2. Create User Account
@@ -550,8 +549,8 @@ All API responses follow a consistent format:
 - Verify database exists: `mysql -u root -p < backend/db/schema.sql`
 
 ### Port Already in Use
-- Backend: `lsof -i :5000` and kill the process
-- Frontend: `lsof -i :3000` and kill the process
+- Backend: Kill the process using port 5000
+- Frontend: Kill the process using port 3000
 
 ### CORS Errors
 - Ensure backend is running
@@ -566,6 +565,3 @@ For issues or questions, check the error messages and logs in:
 - Backend console output
 - Browser developer console (F12)
 - Network tab in browser DevTools
-
-#   S i m p l e - p o l l i n g - a p p l i c a t i o n  
- 
