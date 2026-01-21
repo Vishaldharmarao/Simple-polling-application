@@ -565,3 +565,5 @@ For issues or questions, check the error messages and logs in:
 - Backend console output
 - Browser developer console (F12)
 - Network tab in browser DevTools
+#   S i m p l e - P o l l i n g - A p p l i c a t i o n  
+ 
