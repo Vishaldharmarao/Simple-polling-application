@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api';
-import { formatToIST } from '../utils/date';
+import { formatDateTime } from '../utils/date';
 import '../styles/faculty.css';
 
 const FacultyDashboard = () => {
@@ -301,12 +301,12 @@ const FacultyDashboard = () => {
                                 ) : null}
                                 
                                 <div className="poll-meta">
-                                    <p>Created: {formatToIST(poll.created_at)}</p>
+                                    <p>Created: {formatDateTime(poll.created_at)}</p>
                                     {poll.start_time && (
-                                        <p>Starts: {formatToIST(poll.start_time)}</p>
+                                        <p>Starts: {formatDateTime(poll.start_time)}</p>
                                     )}
                                     {poll.end_time && (
-                                        <p>Ends: {formatToIST(poll.end_time)}</p>
+                                        <p>Ends: {formatDateTime(poll.end_time)}</p>
                                     )}
                                 </div>
                                 <div className="poll-actions">

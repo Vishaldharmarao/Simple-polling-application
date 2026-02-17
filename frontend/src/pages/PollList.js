@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api';
-import { formatToIST } from '../utils/date';
+import { formatDateTime } from '../utils/date';
 import '../styles/polls.css';
 
 export default function PollList() {
@@ -171,16 +171,16 @@ export default function PollList() {
 
                             <div className="poll-meta">
                                 <p className="poll-date">
-                                    Created: {formatToIST(poll.created_at)}
+                                    Created: {formatDateTime(poll.created_at)}
                                 </p>
                                 {poll.start_time && (
                                     <p className="poll-time">
-                                        Opens: {formatToIST(poll.start_time)}
+                                        Opens: {formatDateTime(poll.start_time)}
                                     </p>
                                 )}
                                 {poll.end_time && (
                                     <p className="poll-time">
-                                        Closes: {formatToIST(poll.end_time)}
+                                        Closes: {formatDateTime(poll.end_time)}
                                     </p>
                                 )}
                             </div>

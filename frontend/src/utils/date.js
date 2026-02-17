@@ -1,17 +1,5 @@
-export function formatToIST(value) {
-  if (!value) return '';
-  try {
-    return new Date(value).toLocaleString('en-IN', {
-      timeZone: 'Asia/Kolkata',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    });
-  } catch (e) {
-    return String(value);
-  }
+// Display timestamp exactly as stored in database (already in IST)
+// Do NOT use Date object - it assumes UTC and shifts by 5:30 hours
+export function formatDateTime(value) {
+  return value || '';
 }
