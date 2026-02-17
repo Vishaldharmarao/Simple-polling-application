@@ -16,21 +16,45 @@ export default function Login() {
         setLoading(true);
 
         try {
+            // Validate inputs
+            if (!email.trim() || !password.trim()) {
+                setError('Email and password are required');
+                setLoading(false);
+                return;
+            }
+
+            // Make API call
             const response = await authService.login(email, password);
-            
-            if (response.data.success) {
+
+            // Verify response
+            if (response && response.data && response.data.success) {
+                const userData = response.data.user;
+
                 // Store user data in localStorage
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-                
+                localStorage.setItem('user', JSON.stringify(userData));
+
+                // Dispatch custom event to notify other components of login
+                window.dispatchEvent(new CustomEvent('userLogin', { detail: userData }));
+
+                // Clear form
+                setEmail('');
+                setPassword('');
+
                 // Navigate based on role
-                if (response.data.user.role === 'admin') {
-                    navigate('/admin-dashboard');
+                if (userData.role === 'admin') {
+                    navigate('/admin-dashboard', { replace: true });
+                } else if (userData.role === 'faculty') {
+                    navigate('/faculty-dashboard', { replace: true });
                 } else {
-                    navigate('/polls');
+                    navigate('/polls', { replace: true });
                 }
+            } else {
+                setError(response?.data?.error || 'Login failed. Please try again.');
             }
         } catch (err) {
-            setError(err.response?.data?.error || 'Login failed. Please try again.');
+            const errorMsg = err.response?.data?.error || err.message || 'Login failed. Please try again.';
+            setError(errorMsg);
+            console.error('Login error:', err);
         } finally {
             setLoading(false);
         }
@@ -40,39 +64,60 @@ export default function Login() {
         <div className="auth-container">
             <div className="auth-card">
                 <h1>Login</h1>
-                {error && <div className="error-message">{error}</div>}
-                
+                <p>Sign in to your account</p>
+
+                {error && (
+                    <div className="alert alert-error">
+                        {error}
+                        <button
+                            className="alert-close"
+                            onClick={() => setError('')}
+                            aria-label="Close error"
+                        >
+                            ×
+                        </button>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Email</label>
+                        <label htmlFor="email">Email Address</label>
                         <input
+                            id="email"
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="Enter your email"
+                            disabled={loading}
                             required
                         />
                     </div>
 
                     <div className="form-group">
-                        <label>Password</label>
+                        <label htmlFor="password">Password</label>
                         <input
+                            id="password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Enter your password"
+                            disabled={loading}
                             required
                         />
                     </div>
 
-                    <button type="submit" disabled={loading}>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="btn btn-primary"
+                    >
                         {loading ? 'Logging in...' : 'Login'}
                     </button>
                 </form>
 
-                <p className="auth-link">
+                <div className="auth-link">
                     Don't have an account? <a href="/register">Register here</a>
-                </p>
+                </div>
             </div>
         </div>
     );

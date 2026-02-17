@@ -14,35 +14,69 @@ import ProtectedRoute from './components/ProtectedRoute';
 function App() {
     const [userRole, setUserRole] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [user, setUser] = useState(null);
 
+    // Initialize auth state on app load
     useEffect(() => {
-        // Check if user is logged in
-        const user = JSON.parse(localStorage.getItem('user') || 'null');
-        if (user && user.role) {
-            setUserRole(user.role);
+        try {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                const userData = JSON.parse(storedUser);
+                if (userData && userData.role) {
+                    setUser(userData);
+                    setUserRole(userData.role);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading user from localStorage:', error);
+            localStorage.removeItem('user');
+        } finally {
+            setIsLoading(false);
         }
-        setIsLoading(false);
     }, []);
 
-    // Listen for storage changes (logout from other tabs)
+    // Listen for storage changes (login/logout from same or other tabs)
     useEffect(() => {
         const handleStorageChange = (e) => {
             if (e.key === 'user') {
-                const user = JSON.parse(e.newValue || 'null');
-                if (user && user.role) {
-                    setUserRole(user.role);
+                if (e.newValue) {
+                    try {
+                        const userData = JSON.parse(e.newValue);
+                        setUser(userData);
+                        setUserRole(userData.role);
+                    } catch (error) {
+                        console.error('Error parsing user data:', error);
+                        setUser(null);
+                        setUserRole(null);
+                    }
                 } else {
+                    setUser(null);
                     setUserRole(null);
                 }
             }
         };
 
+        // Listen for custom login event from Login component
+        const handleUserLogin = (e) => {
+            setUser(e.detail);
+            setUserRole(e.detail.role);
+        };
+
         window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
+        window.addEventListener('userLogin', handleUserLogin);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('userLogin', handleUserLogin);
+        };
     }, []);
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="loading">
+                <div>Loading...</div>
+            </div>
+        );
     }
 
     return (
@@ -57,7 +91,7 @@ function App() {
                     path="/polls"
                     element={
                         <ProtectedRoute allowedRoles={['user']} userRole={userRole}>
-                            <PollList />
+                            <PollList key={user?.id} />
                         </ProtectedRoute>
                     }
                 />
@@ -108,7 +142,8 @@ function App() {
                 />
 
                 {/* Default Route */}
-                <Route path="/" element={<Navigate to="/login" replace />} />
+                <Route path="/" element={<Navigate to={userRole ? '/polls' : '/login'} replace />} />
+                <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
         </Router>
     );
