@@ -105,9 +105,10 @@ const FacultyDashboard = () => {
             }
 
             if (formData.startTime && formData.endTime) {
-                const start = new Date(formData.startTime);
-                const end = new Date(formData.endTime);
-                if (start >= end) {
+                // Compare raw datetime-local values to avoid timezone conversion
+                // datetime-local values are in the format YYYY-MM-DDTHH:MM (or with seconds)
+                // Lexicographical comparison is valid for this format
+                if (formData.startTime >= formData.endTime) {
                     setError('Start time must be before end time');
                     return;
                 }
