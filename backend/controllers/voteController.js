@@ -1,3 +1,4 @@
+const { User } = require('../models');
 const VoteService = require('../services/voteService');
 
 class VoteController {
@@ -9,6 +10,22 @@ class VoteController {
                 return res.status(400).json({
                     success: false,
                     error: 'User ID, Poll ID, and Option ID are required'
+                });
+            }
+
+            // Verify user has 'user' role (student)
+            const user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    error: 'User not found'
+                });
+            }
+
+            if (user.role !== 'user') {
+                return res.status(403).json({
+                    success: false,
+                    error: 'Only students can vote on polls. Faculty and admins cannot vote.'
                 });
             }
 

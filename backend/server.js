@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const pollRoutes = require('./routes/pollRoutes');
 const voteRoutes = require('./routes/voteRoutes');
 const passwordRoutes = require('./routes/passwordRoutes');
@@ -22,6 +23,7 @@ app.get('/api/health', (req, res) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/polls', pollRoutes);
 app.use('/api/votes', voteRoutes);
 app.use('/api/password', passwordRoutes);

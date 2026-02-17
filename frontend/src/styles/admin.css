@@ -1,383 +1,436 @@
-/* Admin Dashboard */
-.admin-container {
+/* Admin Dashboard Styles - Modern Design */
+
+.admin-dashboard {
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
 }
 
-.admin-header {
+.admin-dashboard .navbar {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    padding: 1rem 0;
+    box-shadow: var(--shadow-lg);
+}
+
+.admin-dashboard .navbar-container {
+    max-width: 1400px;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 20px 30px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    padding: 0 2rem;
 }
 
-.admin-header h1 {
-    color: #333;
-    font-size: 28px;
+.admin-dashboard .navbar h1 {
+    color: white;
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
-.admin-header div {
+.admin-dashboard .nav-buttons {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 1rem;
 }
 
-.admin-content {
-    display: flex;
+.admin-dashboard .welcome {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.admin-dashboard .logout-btn {
+    background-color: var(--danger);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.admin-dashboard .logout-btn:hover {
+    background-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.admin-dashboard .container {
     max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-    gap: 20px;
+    margin: 2rem auto;
+    padding: 0 2rem;
 }
 
-.admin-nav {
+.admin-dashboard .alert {
+    padding: 14px 16px;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    height: fit-content;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
 }
 
-.nav-btn {
-    width: 200px;
-    padding: 12px;
-    background: #f0f0f0;
-    color: #333;
-    border: 2px solid transparent;
-    border-radius: 6px;
+.admin-dashboard .alert-error {
+    background-color: #fecaca;
+    color: #991b1b;
+    border-left: 4px solid var(--danger);
+}
+
+.admin-dashboard .alert-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid var(--accent);
+}
+
+.admin-dashboard .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    flex-wrap: wrap;
+}
+
+.admin-dashboard .tab-btn {
+    padding: 0.6rem 1.2rem;
+    border: 2px solid var(--border);
+    background: white;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
 }
 
-.nav-btn:hover {
-    background: #e8e8e8;
+.admin-dashboard .tab-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
 }
 
-.nav-btn.active {
-    background: #667eea;
+.admin-dashboard .tab-btn.active {
+    background-color: var(--primary);
     color: white;
-    border-color: #667eea;
+    border-color: var(--primary);
 }
 
-.admin-main {
-    flex: 1;
+.admin-dashboard .tab-content {
     background: white;
-    padding: 30px;
+    padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-lg);
 }
 
-.tab-content h2 {
-    color: #333;
-    margin-bottom: 25px;
-    font-size: 24px;
+.admin-dashboard .tab-content h2 {
+    color: var(--text-primary);
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
 }
 
-.polls-table-container {
-    overflow-x: auto;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-}
-
-.polls-table {
+.admin-dashboard .users-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.polls-table thead {
-    background: #f5f5f5;
-    border-bottom: 2px solid #ddd;
+.admin-dashboard .users-table thead {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    color: white;
 }
 
-.polls-table th {
-    padding: 15px;
+.admin-dashboard .users-table th {
+    padding: 1rem;
     text-align: left;
-    color: #333;
     font-weight: 600;
+    border-bottom: 2px solid var(--border);
 }
 
-.polls-table td {
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-    color: #666;
+.admin-dashboard .users-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--border);
 }
 
-.polls-table tbody tr:hover {
-    background: #f9f9f9;
+.admin-dashboard .users-table tbody tr:hover {
+    background-color: #f8fafc;
 }
 
-.status {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
+.admin-dashboard .badge {
     display: inline-block;
-}
-
-.status.active {
-    background: #d4edda;
-    color: #155724;
-}
-
-.status.inactive {
-    background: #f8d7da;
-    color: #721c24;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.btn-small {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
     font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.3s;
-    white-space: nowrap;
+    text-transform: capitalize;
 }
 
-.btn-small:hover {
-    opacity: 0.8;
+.admin-dashboard .badge-student {
+    background-color: #d1fae5;
+    color: #065f46;
 }
 
-.btn-results {
-    background: #667eea;
-    color: white;
+.admin-dashboard .badge-faculty {
+    background-color: #bfdbfe;
+    color: #1e3a8a;
 }
 
-.btn-toggle {
-    background: #f39c12;
-    color: white;
+.admin-dashboard .badge-admin {
+    background-color: #fecaca;
+    color: #991b1b;
 }
 
-.btn-reset {
-    background: #3498db;
-    color: white;
+.admin-dashboard .create-users-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
 }
 
-.btn-delete {
-    background: #e74c3c;
-    color: white;
-}
-
-.create-poll-form {
-    background: #f9f9f9;
-    padding: 30px;
-    border-radius: 8px;
-}
-
-.create-poll-form .form-group {
-    margin-bottom: 20px;
-}
-
-.create-poll-form label {
-    display: block;
-    margin-bottom: 8px;
-    color: #555;
-    font-weight: 600;
-}
-
-.create-poll-form input {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #e0e0e0;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: border-color 0.3s;
-}
-
-.create-poll-form input:focus {
-    outline: none;
-    border-color: #667eea;
-}
-
-.option-input-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.option-input-group input {
-    flex: 1;
-}
-
-.btn-remove-option {
-    padding: 8px 12px;
-    background: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.btn-remove-option:hover {
-    background: #c0392b;
-}
-
-.btn-add-option {
-    padding: 10px 15px;
-    background: #27ae60;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-    margin-top: 10px;
-}
-
-.btn-add-option:hover {
-    background: #229954;
-}
-
-.btn-submit {
-    width: 100%;
-    padding: 14px;
-    background: #667eea;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.btn-submit:hover:not(:disabled) {
-    background: #5568d3;
-}
-
-.btn-submit:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-}
-
-/* Modal Styles */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background: white;
-    padding: 30px;
+.admin-dashboard .form-container {
+    background: #f8fafc;
+    padding: 1.5rem;
     border-radius: 12px;
-    max-width: 500px;
-    width: 90%;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    position: relative;
+    border: 1px solid var(--border);
 }
 
-.modal-close {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.admin-dashboard .form-container h2 {
+    color: var(--text-primary);
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
 }
 
-.modal-close:hover {
-    background: #c0392b;
+.admin-dashboard .form-group {
+    margin-bottom: 1.5rem;
 }
 
-.modal-content h3 {
-    color: #333;
-    margin-bottom: 20px;
-    font-size: 20px;
-}
-
-.results-detail {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.total-votes {
-    color: #666;
+.admin-dashboard .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
     font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.admin-dashboard .form-group input,
+.admin-dashboard .form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.admin-dashboard .form-group input:focus,
+.admin-dashboard .form-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.admin-dashboard .btn {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.admin-dashboard .btn-primary {
+    background-color: var(--primary);
+    color: white;
+    width: 100%;
+}
+
+.admin-dashboard .btn-primary:hover:not(:disabled) {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.admin-dashboard .btn-secondary {
+    background-color: var(--secondary-light);
+    color: white;
+    width: auto;
+}
+
+.admin-dashboard .btn-secondary:hover:not(:disabled) {
+    background-color: var(--secondary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.admin-dashboard .btn-danger {
+    background-color: var(--danger);
+    color: white;
+    width: auto;
+}
+
+.admin-dashboard .btn-danger:hover:not(:disabled) {
+    background-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.admin-dashboard .btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    width: auto;
+}
+
+.admin-dashboard .polls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.admin-dashboard .poll-card {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.admin-dashboard .poll-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+}
+
+.admin-dashboard .poll-card h3 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.admin-dashboard .poll-card h4 {
+    margin: 1rem 0 0.5rem 0;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.admin-dashboard .poll-card p {
+    margin: 0.5rem 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.admin-dashboard .poll-results {
+    background-color: #f0f4fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border-left: 3px solid var(--primary);
+}
+
+.admin-dashboard .result-bar {
+    margin-bottom: 1rem;
+}
+
+.admin-dashboard .result-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.admin-dashboard .result-count {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.admin-dashboard .progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.admin-dashboard .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+.admin-dashboard .no-responses {
+    color: var(--text-secondary);
+    font-style: italic;
+    margin: 1rem 0;
+}
+
+.admin-dashboard .poll-time {
+    color: var(--primary);
+    font-size: 0.85rem;
+    margin: 0.25rem 0;
+}
+
+.admin-dashboard .poll-date {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin: 0.25rem 0;
+}
+
+.admin-dashboard .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.admin-dashboard .status-badge.active {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.admin-dashboard .status-badge.inactive {
+    background-color: #fecaca;
+    color: #991b1b;
 }
 
 @media (max-width: 768px) {
-    .admin-content {
+    .admin-dashboard .navbar-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .admin-dashboard .tabs {
         flex-direction: column;
     }
 
-    .admin-nav {
-        flex-direction: row;
+    .admin-dashboard .tab-btn {
         width: 100%;
     }
 
-    .nav-btn {
-        width: 100%;
-        flex: 1;
+    .admin-dashboard .create-users-section {
+        grid-template-columns: 1fr;
     }
 
-    .action-buttons {
-        flex-direction: column;
+    .admin-dashboard .polls-grid {
+        grid-template-columns: 1fr;
     }
 
-    .btn-small {
-        width: 100%;
+    .admin-dashboard .users-table {
+        font-size: 0.9rem;
     }
 
-    .polls-table {
-        font-size: 14px;
+    .admin-dashboard .users-table th,
+    .admin-dashboard .users-table td {
+        padding: 0.5rem;
     }
 
-    .polls-table th,
-    .polls-table td {
-        padding: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    .admin-header {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .admin-main {
-        padding: 20px;
-    }
-
-    .create-poll-form {
-        padding: 20px;
-    }
-
-    .polls-table {
-        font-size: 12px;
-    }
-
-    .polls-table th,
-    .polls-table td {
-        padding: 8px;
+    .admin-dashboard .container {
+        padding: 0 1rem;
     }
 }

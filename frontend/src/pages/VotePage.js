@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { pollService, voteService } from '../services/api';
+import apiClient from '../services/apiClient';
 import '../styles/vote.css';
 
 export default function VotePage() {
@@ -16,21 +16,13 @@ export default function VotePage() {
     const [error, setError] = useState('');
     const [results, setResults] = useState(null);
 
-    useEffect(() => {
-        if (!user.id) {
-            navigate('/login');
-            return;
-        }
-        loadPollData();
-    }, [pollId]);
-
-    const loadPollData = async () => {
+    const loadPollData = useCallback(async () => {
         try {
             setLoading(true);
             const [pollRes, voteRes, resultsRes] = await Promise.all([
-                pollService.getPollDetails(pollId),
-                voteService.checkUserVote(user.id, pollId),
-                pollService.getPollResults(pollId)
+                apiClient.get(`/polls/${pollId}`),
+                apiClient.get('/votes/check', { params: { userId: user.id, pollId } }),
+                apiClient.get(`/polls/${pollId}/results`)
             ]);
 
             setPoll(pollRes.data.poll);
@@ -43,7 +35,15 @@ export default function VotePage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [pollId, user.id]);
+
+    useEffect(() => {
+        if (!user.id) {
+            navigate('/login');
+            return;
+        }
+        loadPollData();
+    }, [pollId, navigate, user.id, loadPollData]);
 
     const handleVote = async () => {
         if (!selectedOption) {
@@ -53,7 +53,7 @@ export default function VotePage() {
 
         try {
             setVoting(true);
-            await voteService.submitVote(user.id, pollId, selectedOption);
+            await apiClient.post('/votes', { userId: user.id, pollId, optionId: selectedOption });
             setHasVoted(true);
             setSelectedOption(null);
             
@@ -86,7 +86,7 @@ export default function VotePage() {
                     <div className="voting-section">
                         <h3>Select an option:</h3>
                         <div className="options-list">
-                            {poll.options.map(option => (
+                            {poll.options && poll.options.map(option => (
                                 <label key={option.id} className="option-label">
                                     <input
                                         type="radio"
@@ -118,7 +118,7 @@ export default function VotePage() {
                     <div className="results-section">
                         <h3>Current Results ({results.totalVotes} votes)</h3>
                         <div className="results-list">
-                            {results.results.map(result => (
+                            {results.results && results.results.map(result => (
                                 <div key={result.id} className="result-item">
                                     <div className="result-info">
                                         <span className="result-text">{result.text}</span>

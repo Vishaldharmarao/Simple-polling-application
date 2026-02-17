@@ -10,8 +10,10 @@ CREATE TABLE IF NOT EXISTS users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role ENUM('user', 'admin') DEFAULT 'user',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    role ENUM('admin', 'faculty', 'user') DEFAULT 'user',
+    created_by INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 -- Polls Table
@@ -20,6 +22,8 @@ CREATE TABLE IF NOT EXISTS polls (
     question VARCHAR(500) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     created_by INT NOT NULL,
+    start_time DATETIME,
+    end_time DATETIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -46,11 +50,11 @@ CREATE TABLE IF NOT EXISTS votes (
 );
 
 -- Create Indexes for better performance
-CREATE INDEX idx_polls_created_by ON polls(created_by);
-CREATE INDEX idx_poll_options_poll_id ON poll_options(poll_id);
-CREATE INDEX idx_votes_user_id ON votes(user_id);
-CREATE INDEX idx_votes_poll_id ON votes(poll_id);
-CREATE INDEX idx_votes_option_id ON votes(option_id);
+CREATE INDEX IF NOT EXISTS idx_polls_created_by ON polls(created_by);
+CREATE INDEX IF NOT EXISTS idx_poll_options_poll_id ON poll_options(poll_id);
+CREATE INDEX IF NOT EXISTS idx_votes_user_id ON votes(user_id);
+CREATE INDEX IF NOT EXISTS idx_votes_poll_id ON votes(poll_id);
+CREATE INDEX IF NOT EXISTS idx_votes_option_id ON votes(option_id);
 
 -- Sample Data (Optional - for testing)
 INSERT INTO users (email, password, role) VALUES 

@@ -1,35 +1,48 @@
 const express = require('express');
 const router = express.Router();
 const PollController = require('../controllers/pollController');
+const { requireUser, requireFacultyOnly, requireAdmin, verifyUser } = require('../middleware/authMiddleware');
 
-// Get all polls
-router.get('/', PollController.getAllPolls);
+// ⚠️ IMPORTANT: Specific routes MUST come before parameterized routes (/:id)
 
+// Public Routes - Specific paths first
+// Get all active polls for users (based on scheduling)
+router.get('/user/active', PollController.getActivePollsForUsers);
+
+// Admin-only routes - Specific paths
+// Admin: View all polls (read-only)
+router.get('/admin/all-polls', requireAdmin, PollController.getAllPolls);
+
+// Faculty-only routes - Specific paths
+// Faculty: Get their own polls
+router.get('/faculty/my-polls', requireFacultyOnly, PollController.getFacultyPolls);
+
+// Parameterized routes - these come AFTER specific paths
 // Get specific poll with options
 router.get('/:pollId', PollController.getPollDetails);
 
-// Get poll results
-router.get('/:pollId/results', PollController.getPollResults);
+// Get poll results (restricted by role)
+router.get('/:pollId/results', verifyUser, PollController.getPollResults);
 
-// Admin: Create new poll
-router.post('/', PollController.createPoll);
+// Faculty: Update poll (own polls only)
+router.put('/:pollId', requireFacultyOnly, PollController.updatePoll);
 
-// Admin: Update poll
-router.put('/:pollId', PollController.updatePoll);
+// Faculty: Delete poll (own polls only)
+router.delete('/:pollId', requireFacultyOnly, PollController.deletePoll);
 
-// Admin: Delete poll
-router.delete('/:pollId', PollController.deletePoll);
+// Faculty: Update poll schedule
+router.patch('/:pollId/schedule', requireFacultyOnly, PollController.updatePollSchedule);
 
-// Admin: Add option to poll
-router.post('/:pollId/options', PollController.addOption);
+// Faculty: Add option to poll
+router.post('/:pollId/options', requireFacultyOnly, PollController.addOption);
 
-// Admin: Update option
-router.put('/options/:optionId', PollController.updateOption);
+// Faculty: Update option
+router.put('/options/:optionId', requireFacultyOnly, PollController.updateOption);
 
-// Admin: Delete option
-router.delete('/options/:optionId', PollController.deleteOption);
+// Faculty: Delete option
+router.delete('/options/:optionId', requireFacultyOnly, PollController.deleteOption);
 
-// Admin: Reset votes for a poll
-router.post('/:pollId/reset-votes', PollController.resetVotes);
+// Create new poll with scheduling - POST must be last
+router.post('/', requireFacultyOnly, PollController.createPoll);
 
 module.exports = router;

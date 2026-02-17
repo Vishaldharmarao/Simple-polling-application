@@ -9,4 +9,18 @@ const apiClient = axios.create({
     }
 });
 
+// Add user ID from localStorage to all requests
+apiClient.interceptors.request.use(
+    (config) => {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.id) {
+            config.headers['X-User-ID'] = user.id;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
 export default apiClient;

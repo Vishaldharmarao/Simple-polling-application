@@ -1,0 +1,137 @@
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow-xl);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: color 0.3s;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-form {
+    padding: 24px;
+}
+
+.modal-actions {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.modal-actions .btn {
+    min-width: 100px;
+}
+
+/* Confirm Modal */
+.modal-confirm .modal-body {
+    text-align: center;
+}
+
+.modal-confirm .modal-body p {
+    margin-bottom: 12px;
+}
+
+.user-email {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin: 16px 0;
+}
+
+.warning-text {
+    color: var(--danger) !important;
+    font-weight: 500;
+}
+
+.role-info {
+    background: var(--background);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+}
+
+.role-info .badge {
+    display: inline-block;
+    margin: 0 4px;
+    padding: 4px 12px;
+    background: var(--primary);
+    color: white;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}

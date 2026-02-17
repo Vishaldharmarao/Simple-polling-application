@@ -21,7 +21,7 @@ class AuthService {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create user
+        // Create user (only 'user' role can self-register)
         const userId = await User.create(email, hashedPassword, 'user');
         return userId;
     }
@@ -54,6 +54,74 @@ class AuthService {
 
     static async getUserById(userId) {
         return await User.findById(userId);
+    }
+
+    /**
+     * Create faculty account (ADMIN ONLY)
+     * Faculty cannot self-register
+     */
+    static async createFaculty(email, password, createdByAdminId) {
+        // Validate input
+        if (!email || !password) {
+            throw new Error('Email and password are required');
+        }
+
+        if (email.length < 3 || password.length < 6) {
+            throw new Error('Email must be at least 3 characters and password must be at least 6 characters');
+        }
+
+        // Verify admin exists
+        const admin = await User.findById(createdByAdminId);
+        if (!admin || admin.role !== 'admin') {
+            throw new Error('Only admin can create faculty accounts');
+        }
+
+        // Check if email already exists
+        const existingUser = await User.findByEmail(email);
+        if (existingUser) {
+            throw new Error('Email already registered');
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create faculty user
+        const userId = await User.create(email, hashedPassword, 'faculty', createdByAdminId);
+        return userId;
+    }
+
+    /**
+     * Create admin account (ADMIN ONLY)
+     * Admin can create other admins
+     */
+    static async createAdmin(email, password, createdByAdminId) {
+        // Validate input
+        if (!email || !password) {
+            throw new Error('Email and password are required');
+        }
+
+        if (email.length < 3 || password.length < 6) {
+            throw new Error('Email must be at least 3 characters and password must be at least 6 characters');
+        }
+
+        // Verify admin exists
+        const admin = await User.findById(createdByAdminId);
+        if (!admin || admin.role !== 'admin') {
+            throw new Error('Only admin can create other admins');
+        }
+
+        // Check if email already exists
+        const existingUser = await User.findByEmail(email);
+        if (existingUser) {
+            throw new Error('Email already registered');
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create admin user
+        const userId = await User.create(email, hashedPassword, 'admin', createdByAdminId);
+        return userId;
     }
 }
 

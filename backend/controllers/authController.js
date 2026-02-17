@@ -70,6 +70,68 @@ class AuthController {
             });
         }
     }
+
+    /**
+     * Create faculty account (ADMIN ONLY)
+     */
+    static async createFaculty(req, res) {
+        try {
+            const { email, password, userId: adminId } = req.body;
+
+            if (!email || !password || !adminId) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Email, password, and admin user ID are required'
+                });
+            }
+
+            const facultyId = await AuthService.createFaculty(email, password, adminId);
+
+            res.status(201).json({
+                success: true,
+                message: 'Faculty account created successfully',
+                facultyId,
+                email,
+                role: 'faculty'
+            });
+        } catch (error) {
+            res.status(400).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Create admin account (ADMIN ONLY)
+     */
+    static async createAdmin(req, res) {
+        try {
+            const { email, password, userId: createdByAdminId } = req.body;
+
+            if (!email || !password || !createdByAdminId) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Email, password, and admin user ID are required'
+                });
+            }
+
+            const newAdminId = await AuthService.createAdmin(email, password, createdByAdminId);
+
+            res.status(201).json({
+                success: true,
+                message: 'Admin account created successfully',
+                adminId: newAdminId,
+                email,
+                role: 'admin'
+            });
+        } catch (error) {
+            res.status(400).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
 }
 
 module.exports = AuthController;

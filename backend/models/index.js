@@ -7,10 +7,10 @@ class User {
         return rows[0];
     }
 
-    static async create(email, hashedPassword, role = 'user') {
+    static async create(email, hashedPassword, role = 'user', createdByAdminId = null) {
         const [result] = await pool.query(
-            'INSERT INTO users (email, password, role) VALUES (?, ?, ?)',
-            [email, hashedPassword, role]
+            'INSERT INTO users (email, password, role, created_by) VALUES (?, ?, ?, ?)',
+            [email, hashedPassword, role, createdByAdminId]
         );
         return result.insertId;
     }
@@ -18,6 +18,48 @@ class User {
     static async findById(id) {
         const [rows] = await pool.query('SELECT id, email, role, created_at FROM users WHERE id = ?', [id]);
         return rows[0];
+    }
+
+    static async findByRole(role) {
+        const [rows] = await pool.query(
+            'SELECT id, email, role, created_at FROM users WHERE role = ? ORDER BY created_at DESC',
+            [role]
+        );
+        return rows;
+    }
+
+    static async getAllUsers() {
+        const [rows] = await pool.query(
+            'SELECT id, email, role, created_at FROM users ORDER BY created_at DESC'
+        );
+        return rows;
+    }
+
+    static async delete(id) {
+        try {
+            const [result] = await pool.query(
+                'DELETE FROM users WHERE id = ?',
+                [id]
+            );
+            if (result.affectedRows === 0) {
+                throw new Error('User not found or already deleted');
+            }
+            return {
+                success: true,
+                message: 'User deleted successfully',
+                affectedRows: result.affectedRows
+            };
+        } catch (error) {
+            throw new Error(`Failed to delete user: ${error.message}`);
+        }
+    }
+
+    static async updateRole(id, newRole) {
+        const [result] = await pool.query(
+            'UPDATE users SET role = ? WHERE id = ?',
+            [newRole, id]
+        );
+        return result.affectedRows > 0;
     }
 }
 
@@ -37,15 +79,37 @@ class Poll {
         return rows;
     }
 
+    static async getActivePolls() {
+        // Return only polls that are currently active based on start_time and end_time
+        const now = new Date();
+        const [rows] = await pool.query(
+            `SELECT * FROM polls 
+             WHERE (start_time IS NULL OR start_time <= NOW())
+             AND (end_time IS NULL OR end_time > NOW())
+             AND is_active = 1
+             ORDER BY created_at DESC`
+        );
+        return rows;
+    }
+
+    static async getByCreatedBy(facultyId) {
+        // Get all polls created by a specific faculty member
+        const [rows] = await pool.query(
+            'SELECT * FROM polls WHERE created_by = ? ORDER BY created_at DESC',
+            [facultyId]
+        );
+        return rows;
+    }
+
     static async getById(id) {
         const [rows] = await pool.query('SELECT * FROM polls WHERE id = ?', [id]);
         return rows[0];
     }
 
-    static async create(question, createdBy) {
+    static async create(question, createdBy, startTime = null, endTime = null) {
         const [result] = await pool.query(
-            'INSERT INTO polls (question, is_active, created_by) VALUES (?, ?, ?)',
-            [question, true, createdBy]
+            'INSERT INTO polls (question, is_active, created_by, start_time, end_time) VALUES (?, ?, ?, ?, ?)',
+            [question, true, createdBy, startTime, endTime]
         );
         return result.insertId;
     }
@@ -54,6 +118,13 @@ class Poll {
         await pool.query(
             'UPDATE polls SET question = ?, is_active = ? WHERE id = ?',
             [question, isActive ? 1 : 0, id]
+        );
+    }
+
+    static async updateSchedule(id, startTime, endTime) {
+        await pool.query(
+            'UPDATE polls SET start_time = ?, end_time = ? WHERE id = ?',
+            [startTime, endTime, id]
         );
     }
 

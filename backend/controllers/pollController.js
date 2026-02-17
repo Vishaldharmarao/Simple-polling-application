@@ -1,6 +1,9 @@
 const PollService = require('../services/pollService');
 
 class PollController {
+    /**
+     * Get all polls (ADMIN ONLY)
+     */
     static async getAllPolls(req, res) {
         try {
             const { isActive } = req.query;
@@ -17,6 +20,46 @@ class PollController {
             });
         } catch (error) {
             res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Get active polls for users (based on start_time and end_time)
+     */
+    static async getActivePollsForUsers(req, res) {
+        try {
+            const polls = await PollService.getActivePollsForUsers();
+
+            res.json({
+                success: true,
+                polls
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Get faculty's own polls
+     */
+    static async getFacultyPolls(req, res) {
+        try {
+            const facultyId = req.user.id;
+
+            const polls = await PollService.getFacultyPolls(facultyId);
+
+            res.json({
+                success: true,
+                polls
+            });
+        } catch (error) {
+            res.status(400).json({
                 success: false,
                 error: error.message
             });
@@ -41,23 +84,36 @@ class PollController {
         }
     }
 
+    /**
+     * Create poll (FACULTY ONLY)
+     * Can specify start_time and end_time for scheduling
+     */
     static async createPoll(req, res) {
         try {
-            const { question, options, createdBy } = req.body;
+            const { question, options, startTime, endTime } = req.body;
+            const facultyId = req.user.id;
 
-            if (!createdBy) {
+            if (!question || !options || options.length < 2) {
                 return res.status(400).json({
                     success: false,
-                    error: 'Admin ID is required'
+                    error: 'Question and at least 2 options are required'
                 });
             }
 
-            const pollId = await PollService.createPoll(question, options, createdBy);
+            const pollId = await PollService.createPoll(
+                question,
+                options,
+                facultyId,
+                startTime,
+                endTime
+            );
 
             res.status(201).json({
                 success: true,
                 message: 'Poll created successfully',
-                pollId
+                pollId,
+                startTime,
+                endTime
             });
         } catch (error) {
             res.status(400).json({
@@ -67,6 +123,9 @@ class PollController {
         }
     }
 
+    /**
+     * Update poll (FACULTY ONLY - own polls only)
+     */
     static async updatePoll(req, res) {
         try {
             const { pollId } = req.params;
@@ -86,18 +145,54 @@ class PollController {
         }
     }
 
+    /**
+     * Update poll schedule (FACULTY ONLY)
+     */
+    static async updatePollSchedule(req, res) {
+        try {
+            const { pollId } = req.params;
+            const { startTime, endTime } = req.body;
+            const facultyId = req.user.id;
+
+            if (!startTime || !endTime) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Start time and end time are required'
+                });
+            }
+
+            await PollService.updatePollSchedule(pollId, startTime, endTime, facultyId);
+
+            res.json({
+                success: true,
+                message: 'Poll schedule updated successfully',
+                startTime,
+                endTime
+            });
+        } catch (error) {
+            res.status(400).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Delete poll (FACULTY ONLY - own polls only)
+     */
     static async deletePoll(req, res) {
         try {
             const { pollId } = req.params;
+            const facultyId = req.user.id;
 
-            await PollService.deletePoll(pollId);
+            await PollService.deletePollByFaculty(pollId, facultyId);
 
             res.json({
                 success: true,
                 message: 'Poll deleted successfully'
             });
         } catch (error) {
-            res.status(404).json({
+            res.status(400).json({
                 success: false,
                 error: error.message
             });
@@ -168,36 +263,25 @@ class PollController {
         }
     }
 
+    /**
+     * Get poll results (restricted by role)
+     * Faculty can see results for their own polls only
+     * Admin can see results for all polls (read-only)
+     * Users cannot access this
+     */
     static async getPollResults(req, res) {
         try {
             const { pollId } = req.params;
+            const userId = req.user.id;
 
-            const results = await PollService.getPollResults(pollId);
+            const results = await PollService.getPollResults(pollId, userId);
 
             res.json({
                 success: true,
                 data: results
             });
         } catch (error) {
-            res.status(404).json({
-                success: false,
-                error: error.message
-            });
-        }
-    }
-
-    static async resetVotes(req, res) {
-        try {
-            const { pollId } = req.params;
-
-            await PollService.resetPollVotes(pollId);
-
-            res.json({
-                success: true,
-                message: 'Poll votes have been reset'
-            });
-        } catch (error) {
-            res.status(404).json({
+            res.status(400).json({
                 success: false,
                 error: error.message
             });

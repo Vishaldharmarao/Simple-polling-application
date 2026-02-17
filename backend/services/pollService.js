@@ -1,8 +1,80 @@
-const { Poll, PollOption, Vote } = require('../models');
+const { Poll, PollOption, Vote, User } = require('../models');
 
 class PollService {
+    /**
+     * Get all active polls (for users)
+     * Returns only polls where current time is between start_time and end_time
+     */
+    static async getActivePollsForUsers() {
+        return await Poll.getActivePolls();
+    }
+
+    /**
+     * Get all polls (for admin view only) - with voting statistics
+     */
     static async getAllPolls(isActive = null) {
-        return await Poll.getAll(isActive);
+        try {
+            const polls = await Poll.getAll(isActive);
+            
+            // Enrich each poll with voting data
+            const enrichedPolls = await Promise.all(polls.map(async (poll) => {
+                try {
+                    const totalVotes = await Vote.getTotalVotesByPoll(poll.id);
+                    const votingStats = await this.getPollResults(poll.id);
+                    return {
+                        ...poll,
+                        totalVotes: totalVotes || 0,
+                        votingStats
+                    };
+                } catch (err) {
+                    console.error(`Error enriching poll ${poll.id}:`, err);
+                    return {
+                        ...poll,
+                        totalVotes: 0,
+                        votingStats: { results: [] }
+                    };
+                }
+            }));
+            
+            return enrichedPolls;
+        } catch (err) {
+            console.error('Error in getAllPolls:', err);
+            throw err;
+        }
+    }
+
+    /**
+     * Get polls created by a specific faculty member - with voting statistics
+     */
+    static async getFacultyPolls(facultyId) {
+        const faculty = await User.findById(facultyId);
+        if (!faculty || faculty.role !== 'faculty') {
+            throw new Error('User is not faculty');
+        }
+
+        const polls = await Poll.getByCreatedBy(facultyId);
+        
+        // Enrich each poll with voting data
+        const enrichedPolls = await Promise.all(polls.map(async (poll) => {
+            try {
+                const totalVotes = await Vote.getTotalVotesByPoll(poll.id);
+                const votingStats = await this.getPollResults(poll.id);
+                return {
+                    ...poll,
+                    totalVotes: totalVotes || 0,
+                    votingStats
+                };
+            } catch (err) {
+                console.error(`Error enriching poll ${poll.id}:`, err);
+                return {
+                    ...poll,
+                    totalVotes: 0,
+                    votingStats: { results: [] }
+                };
+            }
+        }));
+        
+        return enrichedPolls;
     }
 
     static async getPollWithOptions(pollId) {
@@ -15,12 +87,32 @@ class PollService {
         return { ...poll, options };
     }
 
-    static async createPoll(question, options, createdBy) {
+    /**
+     * Create poll (FACULTY ONLY)
+     * Faculty can set start_time and end_time for scheduling
+     */
+    static async createPoll(question, options, createdBy, startTime = null, endTime = null) {
+        // Verify creator is faculty
+        const creator = await User.findById(createdBy);
+        if (!creator || creator.role !== 'faculty') {
+            throw new Error('Only faculty can create polls');
+        }
+
+        // Validate poll content
         if (!question || !options || options.length < 2) {
             throw new Error('Poll must have a question and at least 2 options');
         }
 
-        const pollId = await Poll.create(question, createdBy);
+        // Validate scheduling times
+        if (startTime && endTime) {
+            const start = new Date(startTime);
+            const end = new Date(endTime);
+            if (start >= end) {
+                throw new Error('Start time must be before end time');
+            }
+        }
+
+        const pollId = await Poll.create(question, createdBy, startTime, endTime);
 
         for (const option of options) {
             await PollOption.create(pollId, option);
@@ -38,10 +130,53 @@ class PollService {
         await Poll.update(pollId, question, isActive);
     }
 
+    /**
+     * Update poll schedule (FACULTY ONLY - only for their own polls)
+     */
+    static async updatePollSchedule(pollId, startTime, endTime, facultyId) {
+        const poll = await Poll.getById(pollId);
+        if (!poll) {
+            throw new Error('Poll not found');
+        }
+
+        // Verify faculty owns this poll
+        if (poll.created_by !== facultyId) {
+            throw new Error('You can only update your own polls');
+        }
+
+        // Validate scheduling times
+        if (startTime && endTime) {
+            const start = new Date(startTime);
+            const end = new Date(endTime);
+            if (start >= end) {
+                throw new Error('Start time must be before end time');
+            }
+        }
+
+        await Poll.updateSchedule(pollId, startTime, endTime);
+    }
+
     static async deletePoll(pollId) {
         const poll = await Poll.getById(pollId);
         if (!poll) {
             throw new Error('Poll not found');
+        }
+
+        await Poll.delete(pollId);
+    }
+
+    /**
+     * Delete poll (FACULTY ONLY - only for their own polls)
+     */
+    static async deletePollByFaculty(pollId, facultyId) {
+        const poll = await Poll.getById(pollId);
+        if (!poll) {
+            throw new Error('Poll not found');
+        }
+
+        // Verify faculty owns this poll
+        if (poll.created_by !== facultyId) {
+            throw new Error('You can only delete your own polls');
         }
 
         await Poll.delete(pollId);
@@ -64,7 +199,13 @@ class PollService {
         await PollOption.delete(optionId);
     }
 
-    static async getPollResults(pollId) {
+    /**
+     * Get poll results
+     * Faculty can see results for their own polls
+     * Admin can see results for all polls (read-only)
+     * Users cannot see detailed results
+     */
+    static async getPollResults(pollId, userId = null) {
         const poll = await Poll.getById(pollId);
         if (!poll) {
             throw new Error('Poll not found');
