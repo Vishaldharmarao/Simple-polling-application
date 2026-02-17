@@ -72,67 +72,13 @@ async function initializeDatabase() {
 
 let dbPool = null;
 
-// Build allowed origins list based on environment
-function buildAllowedOrigins() {
-    const origins = [];
-    
-    if (process.env.NODE_ENV === 'development') {
-        // Development: Allow localhost variations
-        origins.push(
-            'http://localhost:3000',
-            'http://localhost:5000',
-            'http://127.0.0.1:3000',
-            'http://127.0.0.1:5000'
-        );
-        
-        // Add FRONTEND_URL if specified
-        if (process.env.FRONTEND_URL) {
-            origins.push(process.env.FRONTEND_URL);
-            console.log(`✅ [CORS] Development - Added FRONTEND_URL: ${process.env.FRONTEND_URL}`);
-        }
-    } else {
-        // Production: Only allow FRONTEND_URL (must be set)
-        if (!process.env.FRONTEND_URL) {
-            console.error('⚠️  [CORS] Production requires FRONTEND_URL environment variable!');
-            console.error('   Set FRONTEND_URL to your Vercel frontend URL');
-            process.exit(1);
-        }
-        origins.push(process.env.FRONTEND_URL);
-        console.log(`✅ [CORS] Production - Allowed origin: ${process.env.FRONTEND_URL}`);
-    }
-    
-    return origins;
-}
-
-const allowedOrigins = buildAllowedOrigins();
-
-// CORS Configuration - Production Ready
-const corsOptions = {
-    origin: function (origin, callback) {
-        // Allow requests without origin (like mobile apps or curl requests)
-        if (!origin) {
-            return callback(null, true);
-        }
-        
-        // Check if origin is in whitelist
-        if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            // Log blocked origin for debugging
-            console.warn(`⚠️  [CORS] Blocked request from origin: ${origin}`);
-            console.warn(`   Allowed origins: ${allowedOrigins.join(', ')}`);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,
-    optionsSuccessStatus: 200,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-User-ID', 'X-Requested-With'],
-    maxAge: 86400 // 24 hours - cache preflight requests
-};
-
-// Middleware
-app.use(cors(corsOptions));
+// Temporary permissive CORS for debugging production issues
+// NOTE: This allows all origins and should be removed after debugging
+// Place immediately after `const app = express();` and before route mounts
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
