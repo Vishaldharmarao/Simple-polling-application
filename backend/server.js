@@ -72,32 +72,63 @@ async function initializeDatabase() {
 
 let dbPool = null;
 
-// CORS Configuration - Production Ready
-const corsOptions = {
-    origin: function (origin, callback) {
-        const allowedOrigins = [
+// Build allowed origins list based on environment
+function buildAllowedOrigins() {
+    const origins = [];
+    
+    if (process.env.NODE_ENV === 'development') {
+        // Development: Allow localhost variations
+        origins.push(
             'http://localhost:3000',
             'http://localhost:5000',
             'http://127.0.0.1:3000',
-            process.env.FRONTEND_URL || 'http://localhost:3000'
-        ];
+            'http://127.0.0.1:5000'
+        );
         
-        // In production, you should also add your Render frontend URL
-        if (process.env.NODE_ENV === 'production' && process.env.RENDER_EXTERNAL_URL) {
-            allowedOrigins.push(process.env.RENDER_EXTERNAL_URL);
+        // Add FRONTEND_URL if specified
+        if (process.env.FRONTEND_URL) {
+            origins.push(process.env.FRONTEND_URL);
+            console.log(`✅ [CORS] Development - Added FRONTEND_URL: ${process.env.FRONTEND_URL}`);
+        }
+    } else {
+        // Production: Only allow FRONTEND_URL (must be set)
+        if (!process.env.FRONTEND_URL) {
+            console.error('⚠️  [CORS] Production requires FRONTEND_URL environment variable!');
+            console.error('   Set FRONTEND_URL to your Vercel frontend URL');
+            process.exit(1);
+        }
+        origins.push(process.env.FRONTEND_URL);
+        console.log(`✅ [CORS] Production - Allowed origin: ${process.env.FRONTEND_URL}`);
+    }
+    
+    return origins;
+}
+
+const allowedOrigins = buildAllowedOrigins();
+
+// CORS Configuration - Production Ready
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Allow requests without origin (like mobile apps or curl requests)
+        if (!origin) {
+            return callback(null, true);
         }
         
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Check if origin is in whitelist
+        if (allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            console.warn(`⚠️  CORS blocked request from origin: ${origin}`);
+            // Log blocked origin for debugging
+            console.warn(`⚠️  [CORS] Blocked request from origin: ${origin}`);
+            console.warn(`   Allowed origins: ${allowedOrigins.join(', ')}`);
             callback(new Error('Not allowed by CORS'));
         }
     },
     credentials: true,
     optionsSuccessStatus: 200,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-User-ID', 'X-Requested-With']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-User-ID', 'X-Requested-With'],
+    maxAge: 86400 // 24 hours - cache preflight requests
 };
 
 // Middleware
