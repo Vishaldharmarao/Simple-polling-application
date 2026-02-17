@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api';
+import { formatToIST } from '../utils/date';
 import CreateUserModal from '../components/CreateUserModal';
 import '../styles/user-management.css';
 
@@ -122,13 +123,7 @@ export default function AdminUserManagement() {
         }
     };
 
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
-    };
+    const formatDate = (dateString) => formatToIST(dateString);
 
     const getRoleBadgeClass = (role) => {
         switch (role) {

@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api';
+import { formatToIST } from '../utils/date';
 import '../styles/admin.css';
 
 export default function AdminDashboard() {
@@ -228,7 +229,7 @@ export default function AdminDashboard() {
                                                 <td>{u.id}</td>
                                                 <td>{u.email}</td>
                                                 <td><span className={`badge badge-${u.role}`}>{u.role}</span></td>
-                                                <td>{new Date(u.created_at).toLocaleString()}</td>
+                                                <td>{formatToIST(u.created_at)}</td>
                                                 <td>
                                                     {u.role !== 'admin' && (
                                                         <button 
@@ -268,7 +269,7 @@ export default function AdminDashboard() {
                                             <tr key={f.id}>
                                                 <td>{f.id}</td>
                                                 <td>{f.email}</td>
-                                                <td>{new Date(f.created_at).toLocaleString()}</td>
+                                                <td>{formatToIST(f.created_at)}</td>
                                                 <td>
                                                     <button 
                                                         className="btn btn-danger btn-sm"
@@ -305,7 +306,7 @@ export default function AdminDashboard() {
                                             <tr key={a.id}>
                                                 <td>{a.id}</td>
                                                 <td>{a.email}</td>
-                                                <td>{new Date(a.created_at).toLocaleString()}</td>
+                                                <td>{formatToIST(a.created_at)}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -335,7 +336,7 @@ export default function AdminDashboard() {
                                             <tr key={s.id}>
                                                 <td>{s.id}</td>
                                                 <td>{s.email}</td>
-                                                <td>{new Date(s.created_at).toLocaleString()}</td>
+                                                <td>{formatToIST(s.created_at)}</td>
                                                 <td>
                                                     <button 
                                                         className="btn btn-danger btn-sm"
@@ -469,12 +470,12 @@ export default function AdminDashboard() {
                                             )}
                                             
                                             {poll.start_time && (
-                                                <p className="poll-time"><strong>Starts:</strong> {new Date(poll.start_time).toLocaleString()}</p>
+                                                <p className="poll-time"><strong>Starts:</strong> {formatToIST(poll.start_time)}</p>
                                             )}
                                             {poll.end_time && (
-                                                <p className="poll-time"><strong>Ends:</strong> {new Date(poll.end_time).toLocaleString()}</p>
+                                                <p className="poll-time"><strong>Ends:</strong> {formatToIST(poll.end_time)}</p>
                                             )}
-                                            <p className="poll-date"><strong>Created:</strong> {new Date(poll.created_at).toLocaleString()}</p>
+                                            <p className="poll-date"><strong>Created:</strong> {formatToIST(poll.created_at)}</p>
                                         </div>
                                     ))}
                                 </div>
