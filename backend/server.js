@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2/promise');
+const { formatDateTimeToIST } = require('./utils/dateFormatter');
 
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -81,6 +82,33 @@ app.use(cors({
 }));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+
+// IMPORTANT: Middleware to format datetime values in responses
+// MySQL DATETIME fields don't have timezone info, but we store them in IST
+// Ensure all responses preserve IST timestamps without timezone indicators
+app.use((req, res, next) => {
+    const originalJson = res.json.bind(res);
+    
+    res.json = function(data) {
+        // Custom replacer to format Date objects as IST strings
+        const replacer = (key, value) => {
+            if (value instanceof Date) {
+                // Convert JavaScript Date object to IST datetime string
+                // This properly handles the timezone offset for DATETIME values
+                return formatDateTimeToIST(value);
+            }
+            return value;
+        };
+        
+        // Deep clone and transform the data using the replacer
+        const transformedData = JSON.parse(JSON.stringify(data, replacer));
+        
+        // Call original res.json with transformed data
+        return originalJson(transformedData);
+    };
+    
+    next();
+});
 
 // Request logging middleware
 app.use((req, res, next) => {
