@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import apiClient from '../services/apiClient';
+import API from '../api';
 import '../styles/ChangePassword.css';
 
 const ChangePassword = () => {
@@ -21,7 +21,7 @@ const ChangePassword = () => {
 
         // Check strength via API
         if (password) {
-            apiClient
+            API
                 .post('/password/check-strength', { password })
                 .then((res) => {
                     setStrengthScore(res.data.score);
@@ -66,7 +66,7 @@ const ChangePassword = () => {
         setLoading(true);
 
         // Send request to change password
-        apiClient
+        API
             .post('/password/change-password', {
                 userId,
                 currentPassword,

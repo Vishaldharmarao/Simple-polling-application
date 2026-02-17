@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../services/apiClient';
+import API from '../api';
 import '../styles/admin.css';
 
 export default function AdminDashboard() {
@@ -51,11 +51,11 @@ export default function AdminDashboard() {
 
             // Load all data in parallel
             const [usersRes, facultyRes, adminsRes, studentsRes, pollsRes] = await Promise.all([
-                apiClient.get('/admin/users', { headers }),
-                apiClient.get('/admin/faculty', { headers }),
-                apiClient.get('/admin/admins', { headers }),
-                apiClient.get('/admin/students', { headers }),
-                apiClient.get('/polls/admin/all-polls', { headers })
+                API.get('/admin/users', { headers }),
+                API.get('/admin/faculty', { headers }),
+                API.get('/admin/admins', { headers }),
+                API.get('/admin/students', { headers }),
+                API.get('/polls/admin/all-polls', { headers })
             ]);
 
             setAllUsers(usersRes.data.users || []);
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
         }
 
         try {
-            const response = await apiClient.post('/auth/create-faculty', {
+            const response = await API.post('/auth/create-faculty', {
                 email: createFacultyForm.email,
                 password: createFacultyForm.password,
                 userId: user.id
@@ -108,7 +108,7 @@ export default function AdminDashboard() {
         }
 
         try {
-            const response = await apiClient.post('/auth/create-admin', {
+            const response = await API.post('/auth/create-admin', {
                 email: createAdminForm.email,
                 password: createAdminForm.password,
                 userId: user.id
@@ -129,7 +129,7 @@ export default function AdminDashboard() {
 
         try {
             setError('');
-            await apiClient.delete(`/admin/users/${userId}`, {
+            await API.delete(`/admin/users/${userId}`, {
                 headers: { 'X-User-ID': user.id }
             });
 

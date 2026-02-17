@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../services/apiClient';
+import API from '../api';
 import '../styles/polls.css';
 
 export default function PollList() {
@@ -37,7 +37,7 @@ export default function PollList() {
             setError('');
 
             // Get active polls for the user (based on scheduling)
-            const response = await apiClient.get('/polls/user/active', {
+            const response = await API.get('/polls/user/active', {
                 headers: {
                     'X-User-ID': user.id
                 }

@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../services/apiClient';
+import API from '../api';
 import '../styles/faculty.css';
 
 const FacultyDashboard = () => {
@@ -39,7 +39,7 @@ const FacultyDashboard = () => {
     const fetchPolls = async (facultyId) => {
         try {
             setLoading(true);
-            const response = await apiClient.get('/polls/faculty/my-polls', {
+            const response = await API.get('/polls/faculty/my-polls', {
                 headers: { 'X-User-ID': facultyId }
             });
             setPolls(response.data.polls);
@@ -112,7 +112,7 @@ const FacultyDashboard = () => {
                 }
             }
 
-            const response = await apiClient.post('/polls', {
+            const response = await API.post('/polls', {
                 question: formData.question,
                 options: validOptions,
                 startTime: formData.startTime || null,
@@ -139,7 +139,7 @@ const FacultyDashboard = () => {
     const handleDeletePoll = async (pollId) => {
         if (window.confirm('Are you sure you want to delete this poll?')) {
             try {
-                await apiClient.delete(`/polls/${pollId}`, {
+                await API.delete(`/polls/${pollId}`, {
                     headers: { 'X-User-ID': user.id }
                 });
                 setSuccess('Poll deleted successfully');

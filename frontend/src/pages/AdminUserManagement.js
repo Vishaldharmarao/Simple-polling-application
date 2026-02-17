@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../services/apiClient';
+import API from '../api';
 import CreateUserModal from '../components/CreateUserModal';
 import '../styles/user-management.css';
 
@@ -35,7 +35,7 @@ export default function AdminUserManagement() {
             setLoading(true);
             setError('');
             const headers = { 'X-User-ID': adminId };
-            const res = await apiClient.get('/admin/users', { headers });
+            const res = await API.get('/admin/users', { headers });
             setUsers(res.data.users);
             applyFilters(res.data.users);
         } catch (err) {
@@ -78,7 +78,7 @@ export default function AdminUserManagement() {
     const handleCreateUser = async (formData) => {
         try {
             const headers = { 'X-User-ID': user.id };
-            await apiClient.post('/admin/users', formData, { headers });
+            await API.post('/admin/users', formData, { headers });
             setSuccess('User created successfully!');
             setShowModal(false);
             loadUsers(user.id);
@@ -91,7 +91,7 @@ export default function AdminUserManagement() {
     const handleDeleteUser = async (userId) => {
         try {
             const headers = { 'X-User-ID': user.id };
-            await apiClient.delete(`/admin/users/${userId}`, { headers });
+            await API.delete(`/admin/users/${userId}`, { headers });
             setSuccess('User deleted successfully!');
             setDeleteConfirm(null);
             loadUsers(user.id);
@@ -106,7 +106,7 @@ export default function AdminUserManagement() {
 
         try {
             const headers = { 'X-User-ID': user.id };
-            await apiClient.put(
+            await API.put(
                 `/admin/users/${selectedUser.id}/role`,
                 { role: newRole },
                 { headers }
