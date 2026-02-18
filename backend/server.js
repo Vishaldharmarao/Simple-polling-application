@@ -46,6 +46,12 @@ const mysqlConfig = {
     keepAliveInitialDelayMs: 0
 };
 
+// IMPORTANT: MySQL server timezone must be set to +05:30 (IST) in your
+// managed DB provider (for example Railway) so that NOW() and DATETIME
+// comparisons are evaluated in IST. We rely on the DB server's timezone
+// and `dateStrings: true` so JavaScript does NOT perform any timezone
+// conversions — let MySQL handle time comparisons (e.g. WHERE start_time <= NOW()).
+
 // Initialize MySQL Connection Pool
 async function initializeDatabase() {
     try {
@@ -55,6 +61,16 @@ async function initializeDatabase() {
         const connection = await pool.getConnection();
         await connection.ping();
         connection.release();
+
+        // Verify MySQL server time on startup — this confirms the server
+        // timezone and that DATETIME values (with `dateStrings: true`) will
+        // be returned as plain strings and compared using server time.
+        try {
+            const [rows] = await pool.query("SELECT NOW() as currentTime");
+            console.log('🕒 MySQL Server Time:', rows[0].currentTime);
+        } catch (e) {
+            console.warn('⚠️ Could not read MySQL server time on startup:', e.message);
+        }
         
         console.log('✅ Connected to MySQL database');
         console.log(`📌 Database: ${process.env.DB_NAME} @ ${process.env.DB_HOST}:${process.env.DB_PORT || 3306}`);
@@ -85,48 +101,42 @@ app.use(cors({
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
-// IMPORTANT: Middleware to format datetime values in responses
-// MySQL DATETIME fields don't have timezone info, but we store them in IST
-// Ensure all responses preserve IST timestamps without timezone indicators
-app.use((req, res, next) => {
-    const originalJson = res.json.bind(res);
-    
-    res.json = function(data) {
-        // Custom replacer to format Date objects as IST strings
-        const replacer = (key, value) => {
-            if (value instanceof Date) {
-                // Convert JavaScript Date object to IST datetime string
-                // This properly handles the timezone offset for DATETIME values
-                return formatDateTimeToIST(value);
-            }
-            return value;
-        };
-        
-        // Deep clone and transform the data using the replacer
-        const transformedData = JSON.parse(JSON.stringify(data, replacer));
-        
-        // Call original res.json with transformed data
-        return originalJson(transformedData);
-    };
-    
-    next();
-});
+// NOTE: Removed manual Date -> IST formatting middleware. We now rely on
+// `dateStrings: true` in the MySQL pool config so DATETIME columns are
+// returned as plain strings and MySQL `NOW()` is used for time comparisons.
 
 // Request logging middleware
 app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+    console.log(`[${new Date().toString()}] ${req.method} ${req.path}`);
     next();
 });
 
 // Health Check Endpoint
-app.get('/api/health', (req, res) => {
-    res.json({ 
-        status: 'OK', 
-        message: 'Polling API is running',
-        environment: process.env.NODE_ENV || 'development',
-        database: process.env.DB_NAME,
-        timestamp: new Date().toISOString()
-    });
+app.get('/api/health', async (req, res) => {
+    try {
+        // Use MySQL server time for health responses to avoid JS timezone handling
+        let currentTime = null;
+        if (dbPool) {
+            const [rows] = await dbPool.query("SELECT NOW() as currentTime");
+            currentTime = rows[0].currentTime;
+        }
+
+        res.json({
+            status: 'OK',
+            message: 'Polling API is running',
+            environment: process.env.NODE_ENV || 'development',
+            database: process.env.DB_NAME,
+            timestamp: currentTime
+        });
+    } catch (err) {
+        res.json({
+            status: 'OK',
+            message: 'Polling API is running',
+            environment: process.env.NODE_ENV || 'development',
+            database: process.env.DB_NAME,
+            timestamp: null
+        });
+    }
 });
 
 // Routes
