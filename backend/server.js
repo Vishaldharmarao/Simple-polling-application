@@ -5,7 +5,6 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2/promise');
-const { formatDateTimeToIST } = require('./utils/dateFormatter');
 
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -62,12 +61,22 @@ async function initializeDatabase() {
         await connection.ping();
         connection.release();
 
-        // Verify MySQL server time on startup — this confirms the server
-        // timezone and that DATETIME values (with `dateStrings: true`) will
-        // be returned as plain strings and compared using server time.
+        // Force the MySQL session timezone to IST for this pool.
+        // Note: This sets the session timezone for the connection used by
+        // this query. If your DB provider creates new connections with a
+        // different session timezone, consider configuring the server-side
+        // timezone or using a connection 'connection' event to set it for
+        // each newly created connection. This follows the requested step:
         try {
-            const [rows] = await pool.query("SELECT NOW() as currentTime");
-            console.log('🕒 MySQL Server Time:', rows[0].currentTime);
+            await pool.query("SET time_zone = '+05:30'");
+        } catch (e) {
+            console.warn('⚠️ Could not set MySQL session time_zone to +05:30:', e.message);
+        }
+
+        // Log MySQL server (session) time on startup to confirm IST.
+        try {
+            const [rows] = await pool.query("SELECT NOW() as now");
+            console.log('🕒 MySQL IST Time:', rows[0].now);
         } catch (e) {
             console.warn('⚠️ Could not read MySQL server time on startup:', e.message);
         }
@@ -158,7 +167,7 @@ app.use((req, res) => {
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-    const timestamp = new Date().toISOString();
+    const timestamp = new Date().toString();
     const requestId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     console.error(`\n❌ [${timestamp}] Request ID: ${requestId}`);
