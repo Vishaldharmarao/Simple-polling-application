@@ -123,7 +123,7 @@ export default function AdminUserManagement() {
         }
     };
 
-    const formatDate = (dateString) => formatDateTime(dateString);
+    const formatDate = (dateString) => dateString || '';
 
     const getRoleBadgeClass = (role) => {
         switch (role) {

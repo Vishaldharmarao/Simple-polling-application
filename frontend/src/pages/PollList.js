@@ -171,16 +171,16 @@ export default function PollList() {
 
                             <div className="poll-meta">
                                 <p className="poll-date">
-                                    Created: {formatDateTime(poll.created_at)}
+                                    Created: {poll.created_at}
                                 </p>
                                 {poll.start_time && (
                                     <p className="poll-time">
-                                        Opens: {formatDateTime(poll.start_time)}
+                                        Opens: {poll.start_time}
                                     </p>
                                 )}
                                 {poll.end_time && (
                                     <p className="poll-time">
-                                        Closes: {formatDateTime(poll.end_time)}
+                                        Closes: {poll.end_time}
                                     </p>
                                 )}
                             </div>

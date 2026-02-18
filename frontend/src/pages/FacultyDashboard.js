@@ -301,12 +301,12 @@ const FacultyDashboard = () => {
                                 ) : null}
                                 
                                 <div className="poll-meta">
-                                    <p>Created: {formatDateTime(poll.created_at)}</p>
+                                    <p>Created: {poll.created_at}</p>
                                     {poll.start_time && (
-                                        <p>Starts: {formatDateTime(poll.start_time)}</p>
+                                        <p>Starts: {poll.start_time}</p>
                                     )}
                                     {poll.end_time && (
-                                        <p>Ends: {formatDateTime(poll.end_time)}</p>
+                                        <p>Ends: {poll.end_time}</p>
                                     )}
                                 </div>
                                 <div className="poll-actions">
