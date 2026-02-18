@@ -31,6 +31,8 @@ const mysqlConfig = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: parseInt(process.env.DB_PORT) || 3306,
+    // Return DATETIME as strings instead of JS Date objects to avoid timezone conversion
+    dateStrings: true,
     // SSL configuration for Railway MySQL and other cloud providers
     ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
     // Connection pool settings

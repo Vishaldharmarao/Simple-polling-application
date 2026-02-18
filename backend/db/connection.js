@@ -18,6 +18,8 @@ const poolConfig = {
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'polling_app',
     port: parseInt(process.env.DB_PORT) || 3306,
+    // Return DATETIME as strings instead of JS Date objects to avoid timezone conversion
+    dateStrings: true,
     // SSL configuration for Railway MySQL and production cloud databases
     ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
     // Connection pool settings
