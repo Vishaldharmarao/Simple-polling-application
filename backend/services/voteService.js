@@ -6,36 +6,32 @@ class VoteService {
      * Check poll is active based on scheduling
      */
     static async submitVote(userId, pollId, optionId) {
-        // Verify user exists
+        // Verify user exists and is a student
         const user = await User.findById(userId);
         if (!user || user.role !== 'user') {
             throw new Error('Only students can vote');
         }
 
-        // Verify poll exists
+        // Verify poll exists (basic existence check)
         const poll = await Poll.getById(pollId);
         if (!poll) {
             throw new Error('Poll not found');
         }
 
-        // Check if poll is within active time window
-        const now = new Date();
-        if (poll.start_time) {
-            const startTime = new Date(poll.start_time);
-            if (now < startTime) {
-                throw new Error('This poll is not yet open');
-            }
-        }
+        // Validate poll timing entirely in MySQL using NOW() and session timezone
+        // (session timezone must be set to IST, see server initialization).
+        const pool = require('../db/connection');
+        const [openRows] = await pool.query(
+            `SELECT id FROM polls
+             WHERE id = ?
+             AND is_active = 1
+             AND (start_time IS NULL OR start_time <= NOW())
+             AND (end_time IS NULL OR end_time > NOW())`,
+            [pollId]
+        );
 
-        if (poll.end_time) {
-            const endTime = new Date(poll.end_time);
-            if (now >= endTime) {
-                throw new Error('This poll is now closed');
-            }
-        }
-
-        if (!poll.is_active) {
-            throw new Error('This poll is no longer active');
+        if (!openRows || openRows.length === 0) {
+            throw new Error('This poll is not open');
         }
 
         // Verify option exists
