@@ -4,7 +4,7 @@
  */
 
 const mysql = require('mysql2/promise');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const path = require('path');
 const dotenv = require('dotenv');
 
