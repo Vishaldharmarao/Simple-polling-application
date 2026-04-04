@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../services/apiClient';
+import API from '../api';
+import { formatDateTime } from '../utils/date';
 import '../styles/polls.css';
 
 export default function PollList() {
@@ -37,7 +38,7 @@ export default function PollList() {
             setError('');
 
             // Get active polls for the user (based on scheduling)
-            const response = await apiClient.get('/polls/user/active', {
+            const response = await API.get('/polls/user/active', {
                 headers: {
                     'X-User-ID': user.id
                 }
@@ -170,16 +171,16 @@ export default function PollList() {
 
                             <div className="poll-meta">
                                 <p className="poll-date">
-                                    Created: {new Date(poll.created_at).toLocaleDateString()}
+                                    Created: {poll.created_at}
                                 </p>
                                 {poll.start_time && (
                                     <p className="poll-time">
-                                        Opens: {new Date(poll.start_time).toLocaleString()}
+                                        Opens: {poll.start_time}
                                     </p>
                                 )}
                                 {poll.end_time && (
                                     <p className="poll-time">
-                                        Closes: {new Date(poll.end_time).toLocaleString()}
+                                        Closes: {poll.end_time}
                                     </p>
                                 )}
                             </div>

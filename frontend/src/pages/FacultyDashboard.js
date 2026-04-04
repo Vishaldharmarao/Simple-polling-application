@@ -5,7 +5,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../services/apiClient';
+import API from '../api';
+import { formatDateTime } from '../utils/date';
 import '../styles/faculty.css';
 
 const FacultyDashboard = () => {
@@ -39,7 +40,7 @@ const FacultyDashboard = () => {
     const fetchPolls = async (facultyId) => {
         try {
             setLoading(true);
-            const response = await apiClient.get('/polls/faculty/my-polls', {
+            const response = await API.get('/polls/faculty/my-polls', {
                 headers: { 'X-User-ID': facultyId }
             });
             setPolls(response.data.polls);
@@ -104,15 +105,16 @@ const FacultyDashboard = () => {
             }
 
             if (formData.startTime && formData.endTime) {
-                const start = new Date(formData.startTime);
-                const end = new Date(formData.endTime);
-                if (start >= end) {
+                // Compare raw datetime-local values to avoid timezone conversion
+                // datetime-local values are in the format YYYY-MM-DDTHH:MM (or with seconds)
+                // Lexicographical comparison is valid for this format
+                if (formData.startTime >= formData.endTime) {
                     setError('Start time must be before end time');
                     return;
                 }
             }
 
-            const response = await apiClient.post('/polls', {
+            const response = await API.post('/polls', {
                 question: formData.question,
                 options: validOptions,
                 startTime: formData.startTime || null,
@@ -139,7 +141,7 @@ const FacultyDashboard = () => {
     const handleDeletePoll = async (pollId) => {
         if (window.confirm('Are you sure you want to delete this poll?')) {
             try {
-                await apiClient.delete(`/polls/${pollId}`, {
+                await API.delete(`/polls/${pollId}`, {
                     headers: { 'X-User-ID': user.id }
                 });
                 setSuccess('Poll deleted successfully');
@@ -299,12 +301,12 @@ const FacultyDashboard = () => {
                                 ) : null}
                                 
                                 <div className="poll-meta">
-                                    <p>Created: {new Date(poll.created_at).toLocaleString()}</p>
+                                    <p>Created: {poll.created_at}</p>
                                     {poll.start_time && (
-                                        <p>Starts: {new Date(poll.start_time).toLocaleString()}</p>
+                                        <p>Starts: {poll.start_time}</p>
                                     )}
                                     {poll.end_time && (
-                                        <p>Ends: {new Date(poll.end_time).toLocaleString()}</p>
+                                        <p>Ends: {poll.end_time}</p>
                                     )}
                                 </div>
                                 <div className="poll-actions">

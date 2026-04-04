@@ -81,7 +81,6 @@ class Poll {
 
     static async getActivePolls() {
         // Return only polls that are currently active based on start_time and end_time
-        const now = new Date();
         const [rows] = await pool.query(
             `SELECT * FROM polls 
              WHERE (start_time IS NULL OR start_time <= NOW())

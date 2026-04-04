@@ -6,7 +6,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../services/apiClient';
+import API from '../api';
+import { formatDateTime } from '../utils/date';
 import '../styles/admin.css';
 
 export default function AdminDashboard() {
@@ -51,11 +52,11 @@ export default function AdminDashboard() {
 
             // Load all data in parallel
             const [usersRes, facultyRes, adminsRes, studentsRes, pollsRes] = await Promise.all([
-                apiClient.get('/admin/users', { headers }),
-                apiClient.get('/admin/faculty', { headers }),
-                apiClient.get('/admin/admins', { headers }),
-                apiClient.get('/admin/students', { headers }),
-                apiClient.get('/polls/admin/all-polls', { headers })
+                API.get('/admin/users', { headers }),
+                API.get('/admin/faculty', { headers }),
+                API.get('/admin/admins', { headers }),
+                API.get('/admin/students', { headers }),
+                API.get('/polls/admin/all-polls', { headers })
             ]);
 
             setAllUsers(usersRes.data.users || []);
@@ -83,7 +84,7 @@ export default function AdminDashboard() {
         }
 
         try {
-            const response = await apiClient.post('/auth/create-faculty', {
+            const response = await API.post('/auth/create-faculty', {
                 email: createFacultyForm.email,
                 password: createFacultyForm.password,
                 userId: user.id
@@ -108,7 +109,7 @@ export default function AdminDashboard() {
         }
 
         try {
-            const response = await apiClient.post('/auth/create-admin', {
+            const response = await API.post('/auth/create-admin', {
                 email: createAdminForm.email,
                 password: createAdminForm.password,
                 userId: user.id
@@ -129,7 +130,7 @@ export default function AdminDashboard() {
 
         try {
             setError('');
-            await apiClient.delete(`/admin/users/${userId}`, {
+            await API.delete(`/admin/users/${userId}`, {
                 headers: { 'X-User-ID': user.id }
             });
 
@@ -228,7 +229,7 @@ export default function AdminDashboard() {
                                                 <td>{u.id}</td>
                                                 <td>{u.email}</td>
                                                 <td><span className={`badge badge-${u.role}`}>{u.role}</span></td>
-                                                <td>{new Date(u.created_at).toLocaleString()}</td>
+                                                <td>{u.created_at}</td>
                                                 <td>
                                                     {u.role !== 'admin' && (
                                                         <button 
@@ -268,7 +269,7 @@ export default function AdminDashboard() {
                                             <tr key={f.id}>
                                                 <td>{f.id}</td>
                                                 <td>{f.email}</td>
-                                                <td>{new Date(f.created_at).toLocaleString()}</td>
+                                                <td>{f.created_at}</td>
                                                 <td>
                                                     <button 
                                                         className="btn btn-danger btn-sm"
@@ -305,7 +306,7 @@ export default function AdminDashboard() {
                                             <tr key={a.id}>
                                                 <td>{a.id}</td>
                                                 <td>{a.email}</td>
-                                                <td>{new Date(a.created_at).toLocaleString()}</td>
+                                                <td>{a.created_at}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -335,7 +336,7 @@ export default function AdminDashboard() {
                                             <tr key={s.id}>
                                                 <td>{s.id}</td>
                                                 <td>{s.email}</td>
-                                                <td>{new Date(s.created_at).toLocaleString()}</td>
+                                                <td>{s.created_at}</td>
                                                 <td>
                                                     <button 
                                                         className="btn btn-danger btn-sm"
@@ -469,12 +470,12 @@ export default function AdminDashboard() {
                                             )}
                                             
                                             {poll.start_time && (
-                                                <p className="poll-time"><strong>Starts:</strong> {new Date(poll.start_time).toLocaleString()}</p>
+                                                <p className="poll-time"><strong>Starts:</strong> {poll.start_time}</p>
                                             )}
                                             {poll.end_time && (
-                                                <p className="poll-time"><strong>Ends:</strong> {new Date(poll.end_time).toLocaleString()}</p>
+                                                <p className="poll-time"><strong>Ends:</strong> {poll.end_time}</p>
                                             )}
-                                            <p className="poll-date"><strong>Created:</strong> {new Date(poll.created_at).toLocaleString()}</p>
+                                            <p className="poll-date"><strong>Created:</strong> {poll.created_at}</p>
                                         </div>
                                     ))}
                                 </div>

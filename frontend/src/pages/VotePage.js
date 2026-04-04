@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import apiClient from '../services/apiClient';
+import API from '../api';
 import '../styles/vote.css';
 
 export default function VotePage() {
@@ -43,9 +43,9 @@ export default function VotePage() {
 
             // Fetch all required data in parallel
             const [pollRes, voteRes, resultsRes] = await Promise.all([
-                apiClient.get(`/polls/${pollId}`),
-                apiClient.get(`/votes/check?userId=${user.id}&pollId=${pollId}`),
-                apiClient.get(`/polls/${pollId}/results`)
+                API.get(`/polls/${pollId}`),
+                API.get(`/votes/check?userId=${user.id}&pollId=${pollId}`),
+                API.get(`/polls/${pollId}/results`)
             ]);
 
             // Verify responses
@@ -93,7 +93,7 @@ export default function VotePage() {
             setVoting(true);
             setError('');
 
-            const response = await apiClient.post('/votes', {
+            const response = await API.post('/votes', {
                 userId: user.id,
                 pollId: parseInt(pollId),
                 optionId: parseInt(selectedOption)

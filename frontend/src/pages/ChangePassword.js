@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from '../api';
 import '../styles/ChangePassword.css';
 
 const ChangePassword = () => {
@@ -21,8 +21,8 @@ const ChangePassword = () => {
 
         // Check strength via API
         if (password) {
-            axios
-                .post('http://localhost:5000/api/password/check-strength', { password })
+            API
+                .post('/password/check-strength', { password })
                 .then((res) => {
                     setStrengthScore(res.data.score);
                     setStrengthFeedback(res.data.feedback);
@@ -66,8 +66,8 @@ const ChangePassword = () => {
         setLoading(true);
 
         // Send request to change password
-        axios
-            .post('http://localhost:5000/api/password/change-password', {
+        API
+            .post('/password/change-password', {
                 userId,
                 currentPassword,
                 newPassword,

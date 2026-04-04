@@ -103,14 +103,10 @@ class PollService {
             throw new Error('Poll must have a question and at least 2 options');
         }
 
-        // Validate scheduling times
-        if (startTime && endTime) {
-            const start = new Date(startTime);
-            const end = new Date(endTime);
-            if (start >= end) {
-                throw new Error('Start time must be before end time');
-            }
-        }
+        // NOTE: Do not perform timezone conversions or JS Date parsing here.
+        // The frontend provides startTime and endTime as IST-formatted strings
+        // ("YYYY-MM-DD HH:MM:SS"). We store them directly in the DB and rely
+        // on MySQL's NOW() (with session timezone set to +05:30) for comparisons.
 
         const pollId = await Poll.create(question, createdBy, startTime, endTime);
 
@@ -144,14 +140,9 @@ class PollService {
             throw new Error('You can only update your own polls');
         }
 
-        // Validate scheduling times
-        if (startTime && endTime) {
-            const start = new Date(startTime);
-            const end = new Date(endTime);
-            if (start >= end) {
-                throw new Error('Start time must be before end time');
-            }
-        }
+        // NOTE: Do not perform timezone conversions or JS Date parsing here.
+        // The frontend provides IST-formatted datetime strings; store them
+        // directly and let MySQL perform any comparisons using NOW().
 
         await Poll.updateSchedule(pollId, startTime, endTime);
     }
